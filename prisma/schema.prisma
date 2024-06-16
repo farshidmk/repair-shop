@@ -1,0 +1,66 @@
+// This is your Prisma schema file
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Car {
+  id           Int      @id @default(autoincrement())
+  owner        String
+  model        String
+  brand        String
+  product_year DateTime
+  color        String
+  number       String   @unique
+  visits       Visit[]
+  repairs      Repair[]
+  issues       Issue[]
+}
+
+model Visit {
+  id                  Int      @id @default(autoincrement())
+  entranceDate        DateTime @default(now())
+  currentKilometers   Int
+  nextVisitKilometers Int
+  reseon              String
+  carId               Int      @unique
+  car                 Car      @relation(fields: [carId], references: [id])
+}
+
+model Repair {
+  id        Int      @id @default(autoincrement())
+  cost      Int
+  discount  Int
+  startDate DateTime @default(now())
+  endDate   DateTime
+  carId     Int      @unique
+  car       Car      @relation(fields: [carId], references: [id])
+  issues    Issue[]
+}
+
+model Issue {
+  id       Int      @id @default(autoincrement())
+  findDate DateTime
+  fixDate  DateTime
+  title    String
+  carId    Int      @unique
+  car      Car      @relation(fields: [carId], references: [id])
+  repairId Int
+  repair   Repair   @relation(fields: [repairId], references: [id])
+}
+
+model Transaction {
+  id       Int     @id @default(autoincrement())
+  title    String
+  isIncome Boolean
+  cost     Int
+}
