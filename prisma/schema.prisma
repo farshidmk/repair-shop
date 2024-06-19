@@ -13,17 +13,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id          Int      @id @default(autoincrement())
+  username    String?
+  password    String?
+  firstName   String
+  lastName    String
+  phoneNumber String?
+  role        String
+  createdAt   DateTime
+  cars        Car[]
+}
+
 model Car {
-  id           Int      @id @default(autoincrement())
-  owner        String
-  model        String
-  brand        String
-  product_year DateTime
-  color        String
-  number       String   @unique
-  visits       Visit[]
-  repairs      Repair[]
-  issues       Issue[]
+  id          Int      @id @default(autoincrement())
+  model       String
+  brand       String
+  productYear String?
+  color       String
+  number      String   @unique
+  visits      Visit[]
+  repairs     Repair[]
+  issues      Issue[]
+  ownerId     Int      
+  owner       User     @relation(fields: [ownerId], references: [id])
 }
 
 model Visit {
