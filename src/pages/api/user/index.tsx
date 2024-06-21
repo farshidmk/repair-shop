@@ -6,7 +6,7 @@ import prisma from "../../../../prisma/client";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ServerResponseType<User>>
+  res: NextApiResponse<ServerResponseType<User | User[]>>
 ) {
   if (req.method === "POST") {
     const validation = userZodValidation.safeParse(req.body);
@@ -36,6 +36,10 @@ export default async function handler(
       res.status(400);
     }
   } else if (req.method === "GET") {
+    try {
+      const users = await prisma.user.findMany();
+      res.status(200).json({ isSuccessful: true, data: users });
+    } catch (error) {}
     res.status(200).json({ isSuccessful: true });
   }
   console.log(req.method);

@@ -1,4 +1,5 @@
 import { ServerCallType } from "@/types/server";
+import { QueryFunction, QueryKey } from "@tanstack/react-query";
 import axios from "axios";
 
 // export const BASE_URL = process.env.REACT_APP_API_URL;
@@ -18,7 +19,6 @@ export const serverCall = async ({
   data = { test: 1 },
 }: ServerCallType) => {
   try {
-    console.log({ api }, BASE_URL);
     const requestOptions = {
       url: entity,
       method,
@@ -42,3 +42,7 @@ export const serverCall = async ({
     throw new Error(JSON.stringify(e) || `Error on operation...`);
   }
 };
+
+export const getQueryServerCall = async (
+  params: QueryFunction<unknown, QueryKey, never>
+) => {};

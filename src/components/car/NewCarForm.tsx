@@ -2,12 +2,13 @@
 import { serverCall } from "@/services/api";
 import { ServerCallType } from "@/types/server";
 import { Car } from "@prisma/client";
-import { DefaultError, useMutation } from "@tanstack/react-query";
+import { DefaultError, useMutation, useQuery } from "@tanstack/react-query";
 import React from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ShowErrors from "../showError/ShowErrors";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { carYupValidation } from "@/validations/carValidation";
+import { RenderFormItemType } from "@/types/render";
 
 type Props = {};
 
@@ -23,7 +24,6 @@ const NewCarForm = (props: Props) => {
       color: "",
       model: "",
       number: "",
-      owner: "",
     },
     resolver: yupResolver(carYupValidation),
   });
@@ -51,7 +51,7 @@ const NewCarForm = (props: Props) => {
           type="text"
           className="grow"
           placeholder="صاحب ماشین"
-          {...register("owner", { required: true })}
+          {...register("ownerId", { required: true })}
         />
       </label>
       <label className="input input-bordered flex items-center gap-2">
@@ -73,7 +73,7 @@ const NewCarForm = (props: Props) => {
       </label>
       <label className="input input-bordered flex items-center gap-2">
         سال ساخت
-        <input {...register("product_year", { required: true })} type="date" />
+        <input {...register("productYear", { required: true })} type="date" />
       </label>
 
       <ShowErrors
@@ -90,3 +90,42 @@ const NewCarForm = (props: Props) => {
 };
 
 export default NewCarForm;
+
+const NEW_USER_ITEM: RenderFormItemType[] = [
+  {
+    label: "مدل",
+    name: "model",
+    type: "text",
+    placeholder: "مدل خودرو را وارد کنید",
+  },
+  {
+    label: "برند",
+    name: "brand",
+    type: "text",
+    placeholder: "برند خودرو را وارد کنید",
+  },
+  {
+    label: "رنگ",
+    name: "color",
+    type: "text",
+    placeholder: "رنگ خودرو را وارد کنید",
+  },
+  {
+    label: "شماره پلاک",
+    name: "number",
+    type: "text",
+    placeholder: "شماره پلاک خودرو را وارد کنید",
+  },
+  {
+    label: "سال ساخت ",
+    name: "productYear",
+    type: "text",
+    placeholder: "سال ساخت  خودرو را وارد کنید",
+  },
+  {
+    label: "صاحب خودرو",
+    name: "ownerId",
+    type: "select",
+    options: USER_ROLE.map((role) => ({ label: role, value: role })),
+  },
+];

@@ -1,20 +1,21 @@
 "use client";
 import { serverCall } from "@/services/api";
+import { RenderFormItemType } from "@/types/render";
 import { ServerCallType } from "@/types/server";
 import { User } from "@prisma/client";
-import { DefaultError, useMutation } from "@tanstack/react-query";
-import React from "react";
+import { DefaultError, useMutation, useQuery } from "@tanstack/react-query";
 import { SubmitHandler, useForm } from "react-hook-form";
+import RenderFormItem from "../render/RenderFormItem";
 import ShowErrors from "../showError/ShowErrors";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { carYupValidation } from "@/validations/carValidation";
-import { RenderInputItem } from "@/types/renderInputItem";
 
 type Props = {};
 
 type UserWithoutId = Omit<User, "id">;
 
 const NewUserForm = (props: Props) => {
+  const { data, status } = useQuery({
+    queryKey: ["user"],
+  });
   const {
     register,
     handleSubmit,
@@ -26,7 +27,6 @@ const NewUserForm = (props: Props) => {
     },
     // resolver: yupResolver(carYupValidation),
   });
-
   const { mutate, isPending } = useMutation<
     UserWithoutId,
     DefaultError,
@@ -36,7 +36,7 @@ const NewUserForm = (props: Props) => {
   });
 
   const onSubmit: SubmitHandler<UserWithoutId> = (data) => {
-    serverCall({
+    mutate({
       entity: "user",
       method: "post",
       data,
@@ -49,35 +49,15 @@ const NewUserForm = (props: Props) => {
       className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 "
     >
       {NEW_USER_ITEM.map((item) => (
-        <label
-          key={item.name}
-          className="input input-bordered flex items-center gap-2 mt-2 mb-2"
-        >
-          {item.label}
-          <input
-            type={item.type}
-            className="grow"
-            placeholder={item.label}
-            {...register(item.name as keyof Omit<User, "id">, {
+        <RenderFormItem
+          {...item}
+          useFormRegisterReturn={{
+            ...register(item.name as keyof Omit<User, "id">, {
               required: true,
-            })}
-          />
-        </label>
+            }),
+          }}
+        />
       ))}
-      <div>
-        <label className="">نقش</label>
-        <select
-          className="select select-primary w-full max-w-xs"
-          {...register("role", {
-            required: true,
-          })}
-        >
-          {/* <option disabled selected>What is the best TV show?</option> */}
-          {USER_ROLE.map((role) => (
-            <option key={role}>{role}</option>
-          ))}
-        </select>
-      </div>
 
       <ShowErrors
         errors={Object.values(errors)
@@ -102,27 +82,42 @@ const NewUserForm = (props: Props) => {
 
 export default NewUserForm;
 
-const NEW_USER_ITEM: RenderInputItem<User>[] = [
+const USER_ROLE = ["Administrator", "repairShopUser", "user"];
+const NEW_USER_ITEM: RenderFormItemType[] = [
   {
     label: "نام",
     name: "firstName",
+    type: "text",
+    placeholder: "نام را وارد کنید",
   },
   {
     label: "نام خانوادگی",
     name: "lastName",
+    type: "text",
+    placeholder: "نام خانوادگی را وارد کنید",
   },
   {
     label: "رمز عبور",
     name: "password",
+    type: "text",
+    placeholder: "رمز عبور را وارد کنید",
   },
   {
     label: "شماره تلفن",
     name: "phoneNumber",
+    type: "text",
+    placeholder: "شماره تلفن را وارد کنید",
   },
   {
     label: "نام کاربری",
     name: "username",
+    type: "text",
+    placeholder: "نام کاربری را وارد کنید",
+  },
+  {
+    label: "نقش",
+    name: "role",
+    type: "select",
+    options: USER_ROLE.map((role) => ({ label: role, value: role })),
   },
 ];
-
-const USER_ROLE = ["Administrator", "repairShopUser", "user"];
