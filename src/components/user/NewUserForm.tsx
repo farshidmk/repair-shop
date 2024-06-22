@@ -50,6 +50,7 @@ const NewUserForm = (props: Props) => {
     >
       {NEW_USER_ITEM.map((item) => (
         <RenderFormItem
+          key={item.name}
           {...item}
           useFormRegisterReturn={{
             ...register(item.name as keyof Omit<User, "id">, {

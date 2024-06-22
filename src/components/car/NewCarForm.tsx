@@ -9,8 +9,11 @@ import ShowErrors from "../showError/ShowErrors";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { carYupValidation } from "@/validations/carValidation";
 import { RenderFormItemType } from "@/types/render";
+import RenderFormItem from "../render/RenderFormItem";
 
 type Props = {};
+
+type CarWithoutId = Omit<Car, "id">;
 
 const NewCarForm = (props: Props) => {
   const {
@@ -18,7 +21,7 @@ const NewCarForm = (props: Props) => {
     handleSubmit,
     watch,
     formState: { errors },
-  } = useForm<Omit<Car, "id">>({
+  } = useForm<CarWithoutId>({
     defaultValues: {
       brand: "",
       color: "",
@@ -32,7 +35,7 @@ const NewCarForm = (props: Props) => {
     mutationFn: serverCall,
   });
 
-  const onSubmit: SubmitHandler<Car> = (data) => {
+  const onSubmit: SubmitHandler<CarWithoutId> = (data) => {
     serverCall({
       entity: "car",
       method: "post",
@@ -44,37 +47,17 @@ const NewCarForm = (props: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <input defaultValue="test" {...register("owner")} />
-      <label className="input input-bordered flex items-center gap-2">
-        صاحب ماشین
-        <input
-          type="text"
-          className="grow"
-          placeholder="صاحب ماشین"
-          {...register("ownerId", { required: true })}
+      {NEW_CAR_ITEM.map((item) => (
+        <RenderFormItem
+          key={item.name}
+          {...item}
+          useFormRegisterReturn={{
+            ...register(item.name as keyof CarWithoutId, {
+              required: true,
+            }),
+          }}
         />
-      </label>
-      <label className="input input-bordered flex items-center gap-2">
-        برند
-        <input {...register("brand", { required: true })} />
-      </label>
-      <label className="input input-bordered flex items-center gap-2">
-        رنگ
-        <input {...register("color", { required: true })} />
-      </label>
-
-      <label className="input input-bordered flex items-center gap-2">
-        مدل
-        <input {...register("model", { required: true })} />
-      </label>
-      <label className="input input-bordered flex items-center gap-2">
-        شماره پلاک
-        <input {...register("number", { required: true })} />
-      </label>
-      <label className="input input-bordered flex items-center gap-2">
-        سال ساخت
-        <input {...register("productYear", { required: true })} type="date" />
-      </label>
+      ))}
 
       <ShowErrors
         errors={Object.values(errors)
@@ -91,7 +74,7 @@ const NewCarForm = (props: Props) => {
 
 export default NewCarForm;
 
-const NEW_USER_ITEM: RenderFormItemType[] = [
+const NEW_CAR_ITEM: RenderFormItemType[] = [
   {
     label: "مدل",
     name: "model",
@@ -122,10 +105,9 @@ const NEW_USER_ITEM: RenderFormItemType[] = [
     type: "text",
     placeholder: "سال ساخت  خودرو را وارد کنید",
   },
-  {
-    label: "صاحب خودرو",
-    name: "ownerId",
-    type: "select",
-    options: USER_ROLE.map((role) => ({ label: role, value: role })),
-  },
+  // {
+  //   label: "صاحب خودرو",
+  //   name: "ownerId",
+  //   type: "select",
+  // },
 ];

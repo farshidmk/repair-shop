@@ -1,3 +1,4 @@
+import Navbar from "@/components/layout/Navbar";
 import Providers from "@/providers/Providers";
 import "@/styles/globals.css";
 import type { AppProps } from "next/app";
@@ -11,7 +12,7 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <Providers>
       <main className={fontName.className}>
-        <nav className="bg-slate-400 h-12 text-cyan-300">testing nav</nav>
+        <Navbar />
         <Component {...pageProps} />
       </main>
     </Providers>

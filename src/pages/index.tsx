@@ -30,7 +30,7 @@ export default function Home() {
   );
 }
 
-const MENU_ITEMS = [
+export const MENU_ITEMS = [
   {
     label: "ثبت خودرو جدید",
     path: "/car/new",
