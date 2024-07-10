@@ -17,12 +17,19 @@ const ShowErrors = ({ errors }: Props) => {
   }
   if (errors.length > 0) {
     return (
-      <div role="alert" className="alert alert-error">
-        <MdOutlineReportGmailerrorred />
-        <h4>خطا</h4>
-        <ul>
+      <div
+        role="alert"
+        className="alert alert-error flex flex-col justify-start items-start"
+      >
+        <div className="flex items-center gap-2">
+          <MdOutlineReportGmailerrorred />
+          <h4 className="font-extrabold">خطا</h4>
+        </div>
+        <ul className="list-disc mr-8">
           {errors.map((e) => (
-            <li key={e}>{e}</li>
+            <li key={e} className="text-slate-100 text-xl ">
+              {e}
+            </li>
           ))}
         </ul>
       </div>

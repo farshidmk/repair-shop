@@ -7,8 +7,11 @@ export const carYupValidation = Yup.object().shape({
   color: Yup.string().required("رنگ خودرو را وارد کنید"),
   model: Yup.string().required("مدل خودرو را وارد کنید"),
   number: Yup.string().required("پلاک خودرو را وارد کنید"),
-  owner: Yup.string().required("صاحب خودرو را وارد کنید"),
-  // product_year: Yup.string().length(4, "سال تولید را به درستی وارد کنید"),
+  ownerId: Yup.string().required("صاحب خودرو را وارد کنید"),
+  productYear: Yup.string()
+    .matches(/^[0-9]+$/, "سال ساخت را به درستی وارد کنید")
+    .min(4, "سال ساخت را به درستی وارد کنید")
+    .max(4, "سال ساخت را به درستی وارد کنید"),
 });
 //<Omit<Car, "id">>
 
@@ -27,14 +30,9 @@ export const carZodValidation = z.object({
     message: "پلاک خودرو را به درستی وارد کنید",
     required_error: "پلاک خودرو الزامی است",
   }),
-  owner: z.string({
+  ownerId: z.string({
     message: "صاحب خودرو را به درستی وارد کنید",
     required_error: "صاحب خودرو الزامی است",
   }),
-  productYear: z
-    .string()
-    .datetime({
-      message: "سال تولید خودرو را به درستی وارد کنید",
-    })
-    .optional(),
+  productYear: z.string().optional(),
 });

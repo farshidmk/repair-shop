@@ -43,6 +43,16 @@ export const serverCall = async ({
   }
 };
 
-export const getQueryServerCall = async (
-  params: QueryFunction<unknown, QueryKey, never>
-) => {};
+export const getQueryServerCall = async (params: { queryKey: string[] }) => {
+  let queryKey = params.queryKey;
+  let tempEntity = "";
+  if (Array.isArray(queryKey)) {
+    tempEntity = queryKey.join("/");
+  }
+  tempEntity = String(tempEntity);
+  try {
+    return await serverCall({ entity: tempEntity, method: "get" });
+  } catch (error: any) {
+    throw new Error(error?.message || `خطا در انجام عملیات`);
+  }
+};

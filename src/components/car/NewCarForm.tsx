@@ -1,9 +1,9 @@
 "use client";
-import { serverCall } from "@/services/api";
-import { ServerCallType } from "@/types/server";
-import { Car } from "@prisma/client";
+import { getQueryServerCall, serverCall } from "@/services/api";
+import { ServerCallType, ServerResponseType } from "@/types/server";
+import { Car, User } from "@prisma/client";
 import { DefaultError, useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import ShowErrors from "../showError/ShowErrors";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -16,6 +16,72 @@ type Props = {};
 type CarWithoutId = Omit<Car, "id">;
 
 const NewCarForm = (props: Props) => {
+  const [serverError, setServerError] = useState<string[] | undefined>(
+    undefined
+  );
+  const { data: users, status: usersStatus } = useQuery<
+    unknown,
+    Error,
+    User[] | undefined,
+    string[]
+  >({
+    queryKey: ["user"],
+    queryFn: getQueryServerCall,
+    select(data: ServerResponseType<User[]>): User[] | undefined {
+      if (data.isSuccessful) {
+        return data.data!;
+      }
+      setServerError(data.error);
+      return undefined;
+    },
+  });
+
+  const carItems = useMemo(
+    (): RenderFormItemType[] => [
+      {
+        label: "مدل",
+        name: "model",
+        type: "text",
+        placeholder: "مدل خودرو را وارد کنید",
+      },
+      {
+        label: "برند",
+        name: "brand",
+        type: "text",
+        placeholder: "برند خودرو را وارد کنید",
+      },
+      {
+        label: "رنگ",
+        name: "color",
+        type: "text",
+        placeholder: "رنگ خودرو را وارد کنید",
+      },
+      {
+        label: "شماره پلاک",
+        name: "number",
+        type: "text",
+        placeholder: "شماره پلاک خودرو را وارد کنید",
+      },
+      {
+        label: "سال ساخت ",
+        name: "productYear",
+        type: "text",
+        placeholder: "سال ساخت  خودرو را وارد کنید",
+      },
+      {
+        label: "صاحب خودرو",
+        name: "ownerId",
+        type: "select",
+        options:
+          users?.map((u) => ({
+            value: u.id,
+            label: u.firstName + " " + u.lastName,
+          })) || [],
+      },
+    ],
+    []
+  );
+
   const {
     register,
     handleSubmit,
@@ -43,11 +109,9 @@ const NewCarForm = (props: Props) => {
     });
   };
 
-  console.log({ errors });
-
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {NEW_CAR_ITEM.map((item) => (
+      {carItems.map((item) => (
         <RenderFormItem
           key={item.name}
           {...item}
@@ -60,9 +124,11 @@ const NewCarForm = (props: Props) => {
       ))}
 
       <ShowErrors
-        errors={Object.values(errors)
-          .filter((e) => e.message)
-          .map((e) => e.message!)}
+        errors={
+          Object.values(errors)
+            .filter((e) => e.message)
+            .map((e) => e.message!) || serverError
+        }
       />
 
       <button type="submit" className="btn btn-success btn-wide mt-3">
@@ -73,41 +139,3 @@ const NewCarForm = (props: Props) => {
 };
 
 export default NewCarForm;
-
-const NEW_CAR_ITEM: RenderFormItemType[] = [
-  {
-    label: "مدل",
-    name: "model",
-    type: "text",
-    placeholder: "مدل خودرو را وارد کنید",
-  },
-  {
-    label: "برند",
-    name: "brand",
-    type: "text",
-    placeholder: "برند خودرو را وارد کنید",
-  },
-  {
-    label: "رنگ",
-    name: "color",
-    type: "text",
-    placeholder: "رنگ خودرو را وارد کنید",
-  },
-  {
-    label: "شماره پلاک",
-    name: "number",
-    type: "text",
-    placeholder: "شماره پلاک خودرو را وارد کنید",
-  },
-  {
-    label: "سال ساخت ",
-    name: "productYear",
-    type: "text",
-    placeholder: "سال ساخت  خودرو را وارد کنید",
-  },
-  // {
-  //   label: "صاحب خودرو",
-  //   name: "ownerId",
-  //   type: "select",
-  // },
-];

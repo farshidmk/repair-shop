@@ -42,6 +42,5 @@ export default async function handler(
     } catch (error) {}
     res.status(200).json({ isSuccessful: true });
   }
-  console.log(req.method);
   res.status(400);
 }
